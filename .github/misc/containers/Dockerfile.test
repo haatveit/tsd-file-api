@@ -1,0 +1,12 @@
+FROM docker.io/python:3.9
+
+RUN apt-get update
+RUN apt-get install -y libsodium23 libmagic1
+
+WORKDIR /file-api
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . ./
+RUN python setup.py install

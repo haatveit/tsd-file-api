@@ -1,0 +1,33 @@
+name: tsd-file-api test suite
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build the container image
+        uses: docker/build-push-action@v4
+        with:
+          file: "./.github/misc/containers/Dockerfile.test"
+
+          push: false
+          tags: tsd-file-api
+  run-tests:
+    needs: build-image
+    runs-on: ubuntu-latest
+    container:
+      image: tsd-file-api
+      ports:
+        - 3003
+    steps:
+      - name: Run tests
+        run: |
+          python tsdfileapi/api.py &
+          sleep 2 &&
+          python tsdfileapi/test_file_api.py tsdfileapi/config/config-test.yaml all
