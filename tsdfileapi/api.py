@@ -2351,7 +2351,9 @@ class GenericTableHandler(AuthRequestHandler):
                 )
             else:
                 new_data = self.request.body
+            logging.info("GenericTableHandler patch new_data: %s", new_data)
             data = json_decode(new_data)
+            logging.info("GenericTableHandler patch decoded data: %s", data)
             self.set_resource_identifier_info(data)
             query = self.get_uri_query(self.request.uri)
             self.db.table_update(table_name, query, data)
