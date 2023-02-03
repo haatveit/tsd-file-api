@@ -2356,6 +2356,12 @@ class GenericTableHandler(AuthRequestHandler):
             logging.info("GenericTableHandler patch decoded data: %s", data)
             self.set_resource_identifier_info(data)
             query = self.get_uri_query(self.request.uri)
+            logging.info(
+                "GenericTableHandler: attempting to update table %s with query %s and data %s",
+                table_name,
+                query,
+                data,
+            )
             self.db.table_update(table_name, query, data)
             self.set_status(HTTPStatus.CREATED.value)
             self.write({"data": "data updated"})
