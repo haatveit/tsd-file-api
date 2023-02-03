@@ -2362,6 +2362,7 @@ class GenericTableHandler(AuthRequestHandler):
             self.set_status(HTTPStatus.NOT_FOUND.value)
             self.write({"message": f"table {table_name} does not exist"})
         except Exception as e:
+            logging.exception("failed to patch")
             error = error_for_exception(e, details=self.additional_log_details())
             logging.error(error.message)
             for name, value in error.headers.items():
