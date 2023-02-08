@@ -15,3 +15,4 @@ libnacl==1.7.1
 pika==1.1.0
 six==1.15.0
 https://github.com/haatveit/pysquril/archive/refs/heads/sqlite_query_gen.tar.gz#egg=pysquril==0.2.1
+backoff>=2.2.1
