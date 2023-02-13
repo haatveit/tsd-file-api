@@ -84,30 +84,6 @@ backends:
       import_path: /tmp/pXX
       export_max_num_list: None
       export_path: /file-api/tsdfileapi/data/tsd/pXX/export
-    cluster:
-      allow_list: true
-      export_policy:
-        default:
-          enabled: false
-      request_hook:
-        path: /usr/local/bin/chowner
-        sudo: false
-        enabled: false
-      allow_export: true
-      allow_delete: true
-      allow_info: true
-      group_logic:
-        valid_group_regex: 'p[0-9]+-[a-z-]+'
-        default_url_group: pXX-member-group
-        default_memberships:
-          - pXX-member-group
-        enforce_membership: false
-        enabled: true
-        ensure_tenant_in_group_name: false
-      has_posix_ownership: false
-      import_path: /tmp/pXX/cluster/
-      export_max_num_list: None
-      export_path: /tmp/pXX/export
     publication:
       check_tenant: False
       has_posix_ownership: False
@@ -164,25 +140,6 @@ backends:
         sudo: false
         enabled: false
       import_path: /tmp/pXX/import
-    store:
-      allow_list: true
-      export_policy:
-        default:
-          enabled: false
-      request_hook:
-        enabled: false
-      allow_export: true
-      allow_delete: true
-      allow_info: true
-      group_logic:
-        default_url_group: None
-        default_memberships:
-          - pXX-member-group
-        enabled: false
-      has_posix_ownership: false
-      import_path: /tmp/pXX/store
-      export_max_num_list: None
-      export_path: /tmp/pXX/store
   dbs:
     apps_tables:
       db:
