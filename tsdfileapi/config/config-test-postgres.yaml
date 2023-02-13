@@ -43,9 +43,9 @@ backends:
         enabled: true
         ensure_tenant_in_group_name: false
       has_posix_ownership: false
-      import_path: /tmp/pXX
+      import_path: /tmp/pXX/import
       export_max_num_list: None
-      export_path: /tmp/pXX/export
+      export_path: /tmp/pXX/import
     apps_files:
       allow_list: true
       export_policy:
@@ -64,7 +64,7 @@ backends:
       has_posix_ownership: false
       import_path: /tmp/pXX
       export_max_num_list: None
-      export_path: /tmp/pXX/export
+      export_path: /tmp/pXX
     files_export:
       allow_list: true
       export_policy:
@@ -83,7 +83,7 @@ backends:
       has_posix_ownership: false
       import_path: /tmp/pXX
       export_max_num_list: None
-      export_path: /tmp/pXX/export
+      export_path: /file-api/tsdfileapi/data/tsd/pXX/export
     cluster:
       allow_list: true
       export_policy:
@@ -119,8 +119,8 @@ backends:
       has_posix_ownership: False
       export_max_num_list:
       admin_path: ''
-      import_path: '/tmp/pXX/publication'
-      export_path: '/tmp/pXX/export'
+      import_path: '/tmp/pXX'
+      export_path: '/tmp/pXX'
       allow_export: True
       allow_list: True
       allow_info: True
@@ -156,20 +156,20 @@ backends:
       has_posix_ownership: false
       import_path: /tmp/pXX/survey
       export_max_num_list: None
-      export_path: /tmp/pXX/export
+      export_path: /tmp/pXX/survey
     sns:
       request_hook:
         path: false
         sudo: false
         enabled: false
-      import_path: /pXX/survey/KEYID/FORMID
-      subfolder_path: /pXX/.tsd/KEYID/FORMID
+      import_path: /tmp/pXX/data/durable/nettskjema-submissions/KEYID/FORMID
+      subfolder_path: /tmp/pXX/data/durable/nettskjema-submissions/.tsd/KEYID/FORMID
     form_data:
       request_hook:
         path: false
         sudo: false
         enabled: false
-      import_path: /tmp/pXX/
+      import_path: /tmp/pXX/import
     store:
       allow_list: true
       export_policy:
