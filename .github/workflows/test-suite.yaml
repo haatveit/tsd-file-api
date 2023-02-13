@@ -41,4 +41,4 @@ jobs:
       - name: Run all tsd-file-api tests (SQLite)
         run: docker run --rm "${{ env.CONTAINER_TAG }}" /bin/sh -c "python tsdfileapi/api.py & sleep 2 && python tsdfileapi/test_file_api.py"
       - name: Run all tsd-file-api tests (PostgreSQL)
-        run: docker run --rm "${{ env.CONTAINER_TAG }}" /bin/sh -c "python tsdfileapi/api.py tsdfileapi/config/config-test-postgres.yaml & sleep 2 && python tsdfileapi/test_file_api.py tsdfileapi/config/config-test-postgres.yaml all"
+        run: docker run --rm "${{ env.CONTAINER_TAG }}" /bin/sh -c "python tsdfileapi/api.py tsdfileapi/config/config-test-container-postgres.yaml & sleep 2 && python tsdfileapi/test_file_api.py"
