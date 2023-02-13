@@ -209,7 +209,7 @@ backends:
           DELETE: True
 
 # testing
-data_folder: '/root/tsd-file-api/tsdfileapi/data/'
+data_folder: '/file-api/tsdfileapi/data/'
 test_project: 'p11'
 test_keyid:  '43FA347ED76EC595'
 test_formid: '123456'
@@ -220,4 +220,4 @@ gpg_binary: '/usr/bin/gpg'
 gpg_homedir: '/root/.gnupg/'
 gpg_keyring: 'pubring.gpg'
 gpg_secring: 'secring.gpg'
-test_key_dir: '/root/tsd-file-api/tsdfileapi/tests/'
+test_key_dir: '/file-api/tsdfileapi/tests/'
