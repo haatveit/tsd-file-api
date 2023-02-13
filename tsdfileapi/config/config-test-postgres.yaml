@@ -3,7 +3,7 @@ debug: True
 api_user: root
 token_check_tenant: True
 token_check_exp: True
-disallowed_start_chars: ''
+disallowed_start_chars: '~'
 requestor_claim_name: user
 tenant_claim_name: proj
 valid_tenant_regex: ^[0-9a-z]+$
@@ -109,12 +109,6 @@ backends:
       export_max_num_list: None
       export_path: /tmp/pXX/export
     publication:
-      use_original_uri:
-        header_value: 'X-Original-Uri'
-        claim_conditions:
-          any: False
-          claim_key: 'name'
-          claim_value: 'person'
       check_tenant: False
       has_posix_ownership: False
       export_max_num_list:
@@ -249,11 +243,11 @@ backends:
 # testing
 data_folder: '/file-api/tsdfileapi/data/'
 test_project: 'p11'
-test_keyid:  '43FA347ED76EC595'
+test_keyid:  '264CE5ED60A7548B'
 test_formid: '123456'
-test_user: 'p11-nobody'
+test_user: 'p11-testing'
 test_group: 'p11-member-group'
-public_key_id: '43FA347ED76EC595'
+public_key_id: '264CE5ED60A7548B'
 gpg_binary: '/usr/bin/gpg'
 gpg_homedir: '/root/.gnupg/'
 gpg_keyring: 'pubring.gpg'
