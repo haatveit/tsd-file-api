@@ -1971,7 +1971,12 @@ class TestFileApi(unittest.TestCase):
         upload = f"{self.uploads_folder}/{self.test_group}/{name}"
         self.assertTrue(await_file(upload))
         new_file_mtime = os.stat(upload).st_mtime
-        self.assertEqual(new_file_mtime, original_file_mtime)
+
+        @backoff.on_exception(backoff.expo, AssertionError, max_time=2)
+        def await_same(a, b):
+            self.assertEqual(a, b)
+
+        await_same(new_file_mtime, original_file_mtime)
         # with info
         resp = requests.head(url, headers=headers)
         self.assertEqual(float(resp.headers.get("Modified-Time")), original_file_mtime)
