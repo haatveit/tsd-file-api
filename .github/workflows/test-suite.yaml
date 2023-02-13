@@ -5,9 +5,9 @@ on:
   pull_request:
 
 env:
-  TSD_FILE_API_DB_NAME: tsd_file_api_psql_db
-  TSD_FILE_API_DB_USER: tsd_file_api_psql_user
-  TSD_FILE_API_DB_PASS: tsd_file_api_psql_password
+  TSD_FILE_API_DB_NAME: tsd_file_api_db
+  TSD_FILE_API_DB_USER: tsd_file_api_user
+  TSD_FILE_API_DB_PASS: tsd_file_api_pass
 
 jobs:
   tests:
@@ -29,7 +29,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 127.0.0.1:5432:5432
+          - 5432:5432
 
     steps:
       - name: Check out repository

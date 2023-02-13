@@ -171,7 +171,7 @@ backends:
           dbname: 'tsd_file_api_db'
           user: 'tsd_file_api_user'
           pw: 'tsd_file_api_pass'
-          host: 'postgres'
+          host: '172.17.0.1'
       table_structure:
       mq:
         enabled: False
@@ -191,7 +191,7 @@ backends:
           dbname: 'tsd_file_api_db'
           user: 'tsd_file_api_user'
           pw: 'tsd_file_api_pass'
-          host: 'postgres'
+          host: '172.17.0.1'
       table_structure:
         - submissions
         - metadata
