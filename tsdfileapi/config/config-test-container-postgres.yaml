@@ -3,29 +3,41 @@ backends:
   dbs:
     apps_tables:
       db:
-        engine: sqlite
-        mq: null
-        path: /tmp/pXX
-        table_structure: null
-      table_structure: null
-    publication:
-      db:
-        engine: sqlite
-        mq: null
-        path: /tmp/pXX
-        table_structure: null
-      table_structure: null
+        engine: postgres
+        path:
+        dbconfig:
+          dbname: 'tsd_file_api_db'
+          user: 'tsd_file_api_user'
+          pw: 'tsd_file_api_pass'
+          host: '172.17.0.1'
+      table_structure:
+      mq:
     survey:
       db:
-        engine: sqlite
-        mq: null
-        path: /tmp/pXX/survey
-        table_structure: null
+        engine: postgres
+        path:
+        dbconfig:
+          dbname: 'tsd_file_api_db'
+          user: 'tsd_file_api_user'
+          pw: 'tsd_file_api_pass'
+          host: '172.17.0.1'
       table_structure:
-      - submissions
-      - attachments
-      - metadata
-      - audit
+        - submissions
+        - metadata
+        - attachments
+        - audit
+      mq:
+    publication:
+      db:
+        engine: postgres
+        path:
+        dbconfig:
+          dbname: 'tsd_file_api_db'
+          user: 'tsd_file_api_user'
+          pw: 'tsd_file_api_pass'
+          host: '172.17.0.1'
+      table_structure:
+      mq:
   disk:
     apps_files:
       allow_delete: true
@@ -52,7 +64,7 @@ backends:
       allow_info: true
       allow_list: true
       export_max_num_list: null
-      export_path: /file-api//tsdfileapi/data/tsd/pXX/export
+      export_path: /file-api/tsdfileapi/data/tsd/pXX/export
       export_policy:
         default:
           enabled: false
@@ -144,7 +156,7 @@ backends:
       request_hook:
         enabled: false
 create_tenant_dir: true
-data_folder: /file-api//tsdfileapi/data
+data_folder: /file-api/tsdfileapi/data
 debug: true
 default_file_owner: pXX-nobody
 disallowed_start_chars: '~'
@@ -175,7 +187,7 @@ request_log:
 requestor_claim_name: user
 tenant_claim_name: proj
 tenant_string_pattern: pXX
-test_folder: /file-api//tsdfileapi/tests
+test_folder: /file-api/tsdfileapi/tests
 test_formid: '123456'
 test_group: p11-member-group
 test_keyid: 264CE5ED60A7548B
