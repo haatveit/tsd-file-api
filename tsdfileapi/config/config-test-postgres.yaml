@@ -207,6 +207,17 @@ backends:
           PUT: True
           PATCH: True
           DELETE: True
+    publication:
+      db:
+        engine: postgres
+        path:
+        dbconfig:
+          dbname: 'tsd_file_api_db'
+          user: 'tsd_file_api_user'
+          pw: 'tsd_file_api_pass'
+          host: '172.17.0.1'
+      table_structure:
+      mq:
 
 # testing
 data_folder: '/file-api/tsdfileapi/data/'
