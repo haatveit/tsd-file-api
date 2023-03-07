@@ -400,6 +400,21 @@ class TestFileApi(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 201)
 
+    def test_WWW_generic_table_with_encrypted_get(self) -> None:
+        nonce = libnacl.utils.rand_nonce()
+        key = libnacl.utils.salsa_key()
+        headers = {
+            "Authorization": "Bearer " + TEST_TOKENS["VALID"],
+            "Nacl-Nonce": nonce,
+            "Nacl-Key": key,
+            "Nacl-Chunksize": "4096",
+        }
+        resp = requests.get(
+            self.base_url + "/tables/generic",
+            headers=headers,
+        )
+        self.assertEqual(resp.status_code, 201)
+
     def test_XXX_query_invalid(self) -> None:
         headers = {"Authorization": "Bearer " + TEST_TOKENS["VALID"]}
         resp = requests.get(
@@ -2274,6 +2289,11 @@ def main() -> None:
         "test_find_tenant_storage_path",
         "test_ess_migration",
     ]
+    generic = [
+        "test_W_create_and_insert_into_generic_table",
+        "test_X_use_generic_table",
+        "test_WWW_generic_table_with_encrypted_get",
+    ]
     if len(sys.argv) == 1:
         sys.argv.append("all")
     elif len(sys.argv) == 2:
@@ -2337,6 +2357,7 @@ def main() -> None:
         tests.extend(crypt)
         tests.extend(mtime)
         tests.extend(logs)
+        tests.extend(generic)
     tests.sort()
     suite = unittest.TestSuite()
     for test in tests:
