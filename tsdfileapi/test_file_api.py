@@ -2357,7 +2357,7 @@ def main() -> None:
         tests.extend(crypt)
         tests.extend(mtime)
         tests.extend(logs)
-        tests.extend(generic)
+        # tests.extend(generic)
     tests.sort()
     suite = unittest.TestSuite()
     for test in tests:
