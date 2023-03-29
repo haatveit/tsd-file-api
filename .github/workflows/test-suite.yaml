@@ -52,6 +52,8 @@ jobs:
           --name tsd-file-api-postgres
           "${{ env.CONTAINER_TAG }}"
           tsdfileapi/config/config-test-container-postgres.yaml
+      - name: Debug
+        run: docker ps
       - name: Wait for container init
         run: sleep 2
       - name: Run all tsd-file-api tests (SQLite)
