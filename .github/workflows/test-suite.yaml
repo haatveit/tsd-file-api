@@ -39,24 +39,20 @@ jobs:
         run: echo "CONTAINER_TAG=tsd-file-api:${{ github.sha }}-py${{ matrix.python-version }}-r${{ github.run_attempt }}" >> $GITHUB_ENV
       - name: Build test container image
         run: docker build --tag "${{ env.CONTAINER_TAG }}" --build-arg PYTHON_VERSION="${{ matrix.python-version }}"  -f "./containers/test/Dockerfile" .
-      - name: Start tsd-file-api container (SQLite backend)
+      - name: Start tsd-file-api container and run tests (SQLite backend)
         run: >
-          docker run --rm -d
+          docker run --rm
           -v $PWD:/file-api:ro
           --name tsd-file-api-sqlite
-          "${{ env.CONTAINER_TAG }}"
-      - name: Start tsd-file-api container (PostgreSQL backend)
+          "${{ env.CONTAINER_TAG }}" &&
+          sleep 2 &&
+          docker exec tsd-file-api-sqlite python tsdfileapi/test_file_api.py
+      - name: Start tsd-file-api container and run tests (PostgreSQL backend)
         run: >
-          docker run --rm -d
+          docker run --rm
           -v $PWD:/file-api:ro
           --name tsd-file-api-postgres
           "${{ env.CONTAINER_TAG }}"
-          tsdfileapi/config/config-test-container-postgres.yaml
-      - name: Debug
-        run: docker ps
-      - name: Wait for container init
-        run: sleep 2
-      - name: Run all tsd-file-api tests (SQLite)
-        run: docker exec tsd-file-api-sqlite python tsdfileapi/test_file_api.py
-      - name: Run all tsd-file-api tests (PostgreSQL)
-        run: docker exec tsd-file-api-postgres python tsdfileapi/test_file_api.py
+          tsdfileapi/config/config-test-container-postgres.yaml &&
+          sleep 2 &&
+          docker exec tsd-file-api-postgres python tsdfileapi/test_file_api.py
