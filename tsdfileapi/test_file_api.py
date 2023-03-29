@@ -1665,6 +1665,50 @@ class TestFileApi(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 201)
 
+        # cleartext get
+        resp = requests.get(
+            f"{self.apps}/ega/tables/user_data",
+            headers=headers,
+        )
+        self.assertEqual(resp.status_code, 200)
+        cleartext_response = resp.text
+
+        ### encrypted get
+
+        # sealed box setup for server pubkey
+        test_server_pubkey = base64.b64decode(self.config["test_nacl_public"]["public"])
+        public_key = libnacl.public.PublicKey(test_server_pubkey)
+        client_sealed_box = libnacl.sealed.SealedBox(public_key)
+
+        # client secrets
+        key = libnacl.utils.salsa_key()
+        nonce = libnacl.utils.rand_nonce()
+        cipher_text_key = client_sealed_box.encrypt(key)
+        cipher_text_nonce = client_sealed_box.encrypt(nonce)
+
+        # header setup for encryption
+        encryption_headers = headers.copy()
+        nacl_key = base64.b64encode(cipher_text_key)
+        nacl_nonce = base64.b64encode(cipher_text_nonce)
+        nacl_chunksize = str(100)  # FIXME chunking seems broken
+        content_type = "application/octet-stream+nacl"
+        encryption_headers["Nacl-Nonce"] = nacl_nonce
+        encryption_headers["Nacl-Key"] = nacl_key
+        encryption_headers["Nacl-Chunksize"] = nacl_chunksize
+        encryption_headers["Content-Type"] = content_type
+
+        resp = requests.get(
+            f"{self.apps}/ega/tables/user_data",
+            headers=encryption_headers,
+        )
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertNotEqual(cleartext_response, resp.text)
+        decrypted_data = libnacl.crypto_stream_xor(resp.content, nonce, key)
+
+        decrypted_data_utf8 = decrypted_data.decode("utf-8")
+        self.assertEqual(decrypted_data_utf8, cleartext_response)
+
         # audit
         resp = requests.get(f"{self.apps}/ega/tables/user_data/audit", headers=headers)
         self.assertEqual(resp.status_code, 200)
