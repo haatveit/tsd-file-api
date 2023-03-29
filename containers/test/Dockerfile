@@ -11,7 +11,6 @@ RUN groupadd p12-member-group
 
 COPY containers/test/entrypoint.sh ./
 ENTRYPOINT [ "/entrypoint.sh" ]
-HEALTHCHECK --interval=2s --timeout=1s --start-period=2s --retries=3 CMD [ "curl", "--fail", "http://127.0.0.1:3003/v1/all/config", "||", "exit", "1" ]
 
 EXPOSE 3003
 
