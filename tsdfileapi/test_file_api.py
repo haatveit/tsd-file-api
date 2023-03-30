@@ -6,6 +6,7 @@ import os
 import pwd
 import random
 import shutil
+import string
 import sys
 import tempfile
 import time
@@ -1719,7 +1720,7 @@ class TestFileApi(unittest.TestCase):
                 )
             return decrypted_response.decode("utf-8")
 
-        app = f"{self.apps}/{str(uuid.uuid4())}"
+        app = f"{self.apps}/{''.join(random.choices(string.ascii_lowercase, k=20))}"
         data_table = f"{app}/tables/data"
         source_data = [
             {"key_a": "🤡", "key_b": "💐", "id": random.randint(0, 1000000)},
