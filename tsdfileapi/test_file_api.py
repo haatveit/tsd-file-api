@@ -1757,6 +1757,134 @@ class TestFileApi(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(json.loads(resp.text), [])
 
+    def test_app_backend_encryption(self) -> None:
+        """Test app backend with encrypted retrieval of data."""
+
+        def decrypt_response(
+            response: bytes, chunk_size: int, nonce: bytes, key: bytes
+        ) -> str:
+            """Decrypt the response in chunks specified by chunk_size."""
+            decrypted_response = b""
+            for chunk in range(math.ceil(len(response) / chunk_size)):
+                decrypted_response += libnacl.crypto_stream_xor(
+                    response[chunk * chunk_size : (chunk + 1) * chunk_size],
+                    nonce,
+                    key,
+                )
+            return decrypted_response.decode("utf-8")
+
+        app = f"{self.apps}/{str(uuid.uuid4())}"
+        data_table = f"{app}/tables/data"
+        source_data = [
+            {"key_a": "🤡", "key_b": "💐", "id": random.randint(0, 1000000)},
+            {
+                "key_a": str(uuid.uuid4()),
+                "key3": False,
+                "id": random.randint(0, 1000000),
+            },
+        ]
+        headers = {"Authorization": "Bearer " + TEST_TOKENS["VALID"]}
+        headers["Content-Type"] = "application/json"
+        headers["Resource-Identifier-Key"] = "id"
+
+        # create app and add some data to the data table
+        response = requests.put(
+            data_table,
+            data=json.dumps(source_data),
+            headers=headers,
+        )
+        self.assertEqual(response.status_code, 201)
+        response = requests.get(data_table, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+        # cleartext get
+        response = requests.get(
+            data_table,
+            headers=headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        cleartext_response = response.text
+
+        ### encrypted get of previously added data
+
+        # sealed box setup for server pubkey
+        response = requests.get(f"{self.apps}/crypto/key")
+        encoded_public_key = response.json().get("public_key")
+        public_key = libnacl.public.PublicKey(base64.b64decode(encoded_public_key))
+        client_sealed_box = libnacl.sealed.SealedBox(public_key)
+
+        # client secrets
+        key = libnacl.utils.salsa_key()
+        nonce = libnacl.utils.rand_nonce()
+        cipher_text_key = client_sealed_box.encrypt(key)
+        cipher_text_nonce = client_sealed_box.encrypt(nonce)
+
+        # header setup for encryption
+        encryption_headers = headers.copy()
+        nacl_key = base64.b64encode(cipher_text_key)
+        nacl_nonce = base64.b64encode(cipher_text_nonce)
+        nacl_chunksize = 16384  # 16 KiB
+        content_type = "application/octet-stream+nacl"
+        encryption_headers["Nacl-Nonce"] = nacl_nonce
+        encryption_headers["Nacl-Key"] = nacl_key
+        encryption_headers["Nacl-Chunksize"] = str(nacl_chunksize)
+        encryption_headers["Content-Type"] = content_type
+
+        # encrypted get
+        response = requests.get(
+            data_table,
+            headers=encryption_headers,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # assert the encrypted response is not the same as the cleartext response
+        self.assertNotEqual(cleartext_response, response.text)
+
+        # decrypt each chunk of the encrypted response
+        encrypted_response = response.content
+        decrypted_data_utf8 = decrypt_response(
+            encrypted_response, nacl_chunksize, nonce, key
+        )
+
+        # assert that the decrypted response is the same as the cleartext response
+        self.assertEqual(decrypted_data_utf8, cleartext_response)
+
+        # cleartext get for non-existing data
+        query = f"{data_table}?where=id=eq.🤡"
+        response = requests.get(
+            query,
+            headers=headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        cleartext_empty_response = response.text
+
+        # encrypted get for non-existing data
+        response = requests.get(
+            query,
+            headers=encryption_headers,
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # decode the decrypted response's UTF-8 data
+        encrypted_empty_response = response.content
+        decrypted_empty_data = decrypt_response(
+            encrypted_empty_response, nacl_chunksize, nonce, key
+        )
+
+        # assert that the decrypted response is the same as the cleartext response
+        self.assertEqual(decrypted_empty_data, cleartext_empty_response)
+
+        # cleanup
+        resp = requests.delete(data_table, headers=headers)
+        self.assertEqual(resp.status_code, 200)
+
+        # test delete semantics - on audit too
+        resp = requests.get(f"{data_table}", headers=headers)
+        self.assertEqual(resp.status_code, 404)
+        resp = requests.get(f"{data_table}/audit", headers=headers)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(json.loads(resp.text), [])
+
     def test_nacl_crypto(self) -> None:
 
         # https://libnacl.readthedocs.io/en/latest/index.html
@@ -2336,6 +2464,7 @@ def main() -> None:
     load = ["test_XXX_load"]
     apps = [
         "test_app_backend",
+        "test_app_backend_encryption",
     ]
     crypt = ["test_nacl_crypto"]
     maintenance = [
