@@ -1677,8 +1677,9 @@ class TestFileApi(unittest.TestCase):
         ### encrypted get
 
         # sealed box setup for server pubkey
-        test_server_pubkey = base64.b64decode(self.config["test_nacl_public"]["public"])
-        public_key = libnacl.public.PublicKey(test_server_pubkey)
+        resp = requests.get(f"{self.apps}/crypto/key")
+        encoded_public_key = resp.json().get("public_key")
+        public_key = libnacl.public.PublicKey(base64.b64decode(encoded_public_key))
         client_sealed_box = libnacl.sealed.SealedBox(public_key)
 
         # client secrets
