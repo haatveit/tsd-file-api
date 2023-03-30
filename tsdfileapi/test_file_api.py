@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import math
 import os
 import pwd
 import random
@@ -1690,11 +1691,11 @@ class TestFileApi(unittest.TestCase):
         encryption_headers = headers.copy()
         nacl_key = base64.b64encode(cipher_text_key)
         nacl_nonce = base64.b64encode(cipher_text_nonce)
-        nacl_chunksize = str(100)  # FIXME chunking seems broken
+        nacl_chunksize = 16384  # 16 KiB
         content_type = "application/octet-stream+nacl"
         encryption_headers["Nacl-Nonce"] = nacl_nonce
         encryption_headers["Nacl-Key"] = nacl_key
-        encryption_headers["Nacl-Chunksize"] = nacl_chunksize
+        encryption_headers["Nacl-Chunksize"] = str(nacl_chunksize)
         encryption_headers["Content-Type"] = content_type
 
         resp = requests.get(
@@ -1703,10 +1704,26 @@ class TestFileApi(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 200)
 
+        # assert the encrypted response is not the same as the cleartext response
         self.assertNotEqual(cleartext_response, resp.text)
-        decrypted_data = libnacl.crypto_stream_xor(resp.content, nonce, key)
 
-        decrypted_data_utf8 = decrypted_data.decode("utf-8")
+        # decrypt each chunk of the encrypted response
+        encrypted_response = resp.content
+        chunks = math.ceil(len(encrypted_response) / nacl_chunksize)
+        decrypted_response = b""
+        for chunk in range(chunks):
+            decrypted_response += libnacl.crypto_stream_xor(
+                encrypted_response[
+                    chunk * nacl_chunksize : (chunk + 1) * nacl_chunksize
+                ],
+                nonce,
+                key,
+            )
+
+        # decode the decrypted response's UTF-8 data
+        decrypted_data_utf8 = decrypted_response.decode("utf-8")
+
+        # assert that the decrypted response is the same as the cleartext response
         self.assertEqual(decrypted_data_utf8, cleartext_response)
 
         # audit
