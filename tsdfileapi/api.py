@@ -2289,7 +2289,7 @@ class GenericTableHandler(AuthRequestHandler):
                         "[]"
                         if not encrypt_data
                         else libnacl.crypto_stream_xor(
-                            msg="[]",
+                            msg=b"[]",
                             nonce=self.nacl_nonce,
                             key=self.nacl_key,
                         )
