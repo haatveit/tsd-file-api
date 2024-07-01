@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [2.17.2] - 2024-07-01
 
 ### ⚙️ Miscellaneous Tasks
 
