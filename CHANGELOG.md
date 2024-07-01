@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file.
 
 ### ⚙️ Miscellaneous Tasks
 
-* *(docs)* Update CHANGELOG
 * *(changelog)* Update changelog on release workflow run
 
 ## [2.17.1] - 2024-07-01
