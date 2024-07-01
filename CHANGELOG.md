@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+### ⚙️ Miscellaneous Tasks
+
+* *(docs)* Update CHANGELOG
+* *(changelog)* Update changelog on release workflow run
+
+## [2.17.1] - 2024-07-01
+
 ### 🚧 Build
 
 * *(deps)* Bump urllib3 from 1.26.18 to 1.26.19
