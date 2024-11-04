@@ -42,6 +42,17 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      pgbouncer:
+        image: docker.io/bitnami/pgbouncer:latest
+        env:
+          POSTGRESQL_USERNAME: ${{env.TSD_FILE_API_DB_USER}}
+          POSTGRESQL_PASSWORD: ${{env.TSD_FILE_API_DB_PASS}}
+          POSTGRESQL_DATABASE: ${{env.TSD_FILE_API_DB_NAME}}
+          POSTGRESQL_HOST: postgres
+          POSTGRESQL_PORT: 5432
+          PGBOUNCER_PORT: 5432
+          PGBOUNCER_POOL_MODE: transaction
+          PGBOUNCER_DATABASE: ${{env.TSD_FILE_API_DB_NAME}}
         ports:
           - 5432:5432
 
